@@ -71,7 +71,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.5, ease: 'easeOut' as const },
   },
 };
 
@@ -81,7 +81,7 @@ const pulseVariants = {
     transition: {
       duration: 2,
       repeat: Infinity,
-      ease: 'easeInOut',
+      ease: 'easeInOut' as const,
     },
   },
 };
@@ -92,7 +92,7 @@ const floatVariants = {
     transition: {
       duration: 3,
       repeat: Infinity,
-      ease: 'easeInOut',
+      ease: 'easeInOut' as const,
     },
   },
 };
@@ -172,8 +172,6 @@ export default function Home() {
         <span className="text-gray-300 text-sm font-medium">{label}</span>
       </div>
       <p className="text-white text-xl font-bold group-hover:text-purple-300 transition-colors">{value}</p>
-    </motion.div>
-  );
     </motion.div>
   );
 
