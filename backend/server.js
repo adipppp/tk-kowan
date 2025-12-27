@@ -53,10 +53,14 @@ CRITICAL INSTRUCTIONS:
 - Return ONLY valid JSON. No markdown formatting. No backticks. No explanations outside JSON.
 - All costs should be realistic estimates based on the destination and budget level.
 - Activities should be specific to the destination and reflect local culture and attractions.
+- The countryCode MUST be a valid ISO 3166-1 alpha-2 country code (e.g., "JP" for Japan, "FR" for France, "US" for USA).
 
 JSON SCHEMA (follow this exactly):
 {
   "summary": "Short enthusiastic summary of the trip (2-3 sentences)",
+  "countryCode": "ISO 3166-1 alpha-2 country code (e.g., JP, FR, US, IT, TH)",
+  "cityName": "The main city name without country (e.g., Tokyo, Paris, Rome)",
+  "history": "A fascinating 2-3 sentence brief history of this destination highlighting its most interesting historical facts",
   "currency": "Local Currency Code (e.g., EUR, JPY, USD)",
   "costs": {
     "flights": "Estimated round-trip flight cost range (e.g., $800-$1200)",

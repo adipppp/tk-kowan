@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -16,6 +17,8 @@ import {
   ChevronRight,
   Globe,
   Heart,
+  History,
+  Flag,
 } from 'lucide-react';
 
 // Types
@@ -36,6 +39,9 @@ interface DaySchedule {
 interface Itinerary {
   summary: string;
   currency: string;
+  countryCode: string;
+  cityName: string;
+  history: string;
   costs: Costs;
   schedule: DaySchedule[];
 }
@@ -47,6 +53,49 @@ interface ApiResponse {
   budget: string;
   itinerary: Itinerary;
 }
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
+
+const pulseVariants = {
+  pulse: {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+};
+
+const floatVariants = {
+  float: {
+    y: [0, -10, 0],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+};
 
 export default function Home() {
   // Form state
@@ -106,18 +155,25 @@ export default function Home() {
     delay: number;
   }) => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300"
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, duration: 0.5, type: 'spring', stiffness: 100 }}
+      whileHover={{ scale: 1.05, y: -5 }}
+      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 cursor-pointer group"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+        <motion.div
+          className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl"
+          whileHover={{ rotate: 360 }}
+          transition={{ duration: 0.5 }}
+        >
           <Icon className="w-5 h-5 text-white" />
-        </div>
+        </motion.div>
         <span className="text-gray-300 text-sm font-medium">{label}</span>
       </div>
-      <p className="text-white text-xl font-bold">{value}</p>
+      <p className="text-white text-xl font-bold group-hover:text-purple-300 transition-colors">{value}</p>
+    </motion.div>
+  );
     </motion.div>
   );
 
@@ -288,30 +344,110 @@ export default function Home() {
               className="py-16 px-4"
             >
               <div className="max-w-5xl mx-auto">
-                {/* Summary Header */}
+                {/* Destination Header with Flag */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-center mb-12"
+                  className="text-center mb-8"
                 >
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                  {/* Country Flag */}
+                  {result.itinerary.countryCode && (
+                    <motion.div
+                      variants={floatVariants}
+                      animate="float"
+                      className="flex justify-center mb-6"
+                    >
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                        className="relative"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50" />
+                        <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 shadow-2xl">
+                          <Image
+                            src={`https://flagcdn.com/w160/${result.itinerary.countryCode.toLowerCase()}.png`}
+                            alt={`${result.itinerary.countryCode} flag`}
+                            width={120}
+                            height={80}
+                            className="rounded-lg shadow-lg"
+                            unoptimized
+                          />
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+
+                  <motion.h2
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4, type: 'spring' }}
+                    className="text-3xl md:text-5xl font-bold text-white mb-4"
+                  >
                     Your Trip to{' '}
-                    <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {result.destination}
+                    <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                      {result.itinerary.cityName || result.destination}
                     </span>
-                  </h2>
-                  <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+                  </motion.h2>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-gray-300 text-lg max-w-2xl mx-auto"
+                  >
                     {result.itinerary.summary}
-                  </p>
-                  <div className="mt-4 inline-block px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300">
-                    {result.days} Days • {result.budget} Budget •{' '}
-                    {result.itinerary.currency}
-                  </div>
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm text-gray-300"
+                  >
+                    <Flag className="w-4 h-4 text-purple-400" />
+                    {result.days} Days • {result.budget} Budget • {result.itinerary.currency}
+                  </motion.div>
                 </motion.div>
 
+                {/* City History Section */}
+                {result.itinerary.history && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="mb-12"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      className="bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 backdrop-blur-md border border-purple-500/30 rounded-2xl p-6 relative overflow-hidden"
+                    >
+                      {/* Animated background gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-purple-500/10 animate-pulse" />
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                          <motion.div
+                            animate={{ rotate: [0, 10, -10, 0] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl"
+                          >
+                            <History className="w-5 h-5 text-white" />
+                          </motion.div>
+                          <h3 className="text-xl font-bold text-white">A Glimpse into History</h3>
+                        </div>
+                        <p className="text-gray-300 leading-relaxed">{result.itinerary.history}</p>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+
                 {/* Cost Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-16">
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-16"
+                >
                   <CostCard
                     icon={Plane}
                     label="Flights"
@@ -342,7 +478,7 @@ export default function Home() {
                     value={result.itinerary.costs.total}
                     delay={0.7}
                   />
-                </div>
+                </motion.div>
 
                 {/* Timeline / Schedule */}
                 <motion.div
@@ -350,9 +486,20 @@ export default function Home() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
-                  <h3 className="text-2xl font-bold text-white mb-8 text-center">
+                  <motion.h3
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="text-2xl font-bold text-white mb-8 text-center flex items-center justify-center gap-3"
+                  >
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                    >
+                      🗓️
+                    </motion.span>
                     Day-by-Day Itinerary
-                  </h3>
+                  </motion.h3>
                   <div className="relative">
                     {/* Vertical Timeline Line */}
                     <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500 via-pink-500 to-purple-500 transform md:-translate-x-1/2" />
@@ -370,22 +517,34 @@ export default function Home() {
                           }`}
                         >
                           {/* Day Marker */}
-                          <div className="absolute left-4 md:left-1/2 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center transform -translate-x-1/2 z-10 shadow-lg shadow-purple-500/30">
-                            <span className="text-white text-sm font-bold">
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1 + index * 0.1, type: 'spring', stiffness: 200 }}
+                            className="absolute left-4 md:left-1/2 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center transform -translate-x-1/2 z-10 shadow-lg shadow-purple-500/30"
+                          >
+                            <motion.span
+                              variants={pulseVariants}
+                              animate="pulse"
+                              className="text-white text-sm font-bold"
+                            >
                               {day.day}
-                            </span>
-                          </div>
+                            </motion.span>
+                          </motion.div>
 
                           {/* Content Card */}
                           <div
-                            className={`ml-12 md:ml-0 md:w-[calc(50%-2rem)] ${
+                            className={`ml-14 md:ml-0 md:w-[calc(50%-2rem)] ${
                               index % 2 === 0
                                 ? 'md:pr-8 md:text-right'
                                 : 'md:pl-8 md:text-left'
                             }`}
                           >
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300">
-                              <h4 className="text-xl font-bold text-white mb-4">
+                            <motion.div
+                              whileHover={{ scale: 1.02, y: -5 }}
+                              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
+                            >
+                              <h4 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
                                 {day.title}
                               </h4>
                               <ul
@@ -398,18 +557,23 @@ export default function Home() {
                                 {day.activities.map((activity, actIndex) => (
                                   <li
                                     key={actIndex}
-                                    className="text-gray-300 text-sm flex items-start gap-2"
+                                    className="text-gray-300 text-sm flex items-start gap-2 hover:text-white transition-colors"
                                     style={{
                                       flexDirection:
                                         index % 2 === 0 ? 'row-reverse' : 'row',
                                     }}
                                   >
-                                    <ChevronRight className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+                                    <motion.div
+                                      initial={{ rotate: 0 }}
+                                      whileHover={{ rotate: 90, scale: 1.2 }}
+                                    >
+                                      <ChevronRight className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+                                    </motion.div>
                                     <span>{activity}</span>
                                   </li>
                                 ))}
                               </ul>
-                            </div>
+                            </motion.div>
                           </div>
 
                           {/* Spacer for alternating layout */}
@@ -422,20 +586,28 @@ export default function Home() {
 
                 {/* Generate Another Button */}
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.5 }}
                   className="text-center mt-16"
                 >
-                  <button
+                  <motion.button
                     onClick={() => {
                       setResult(null);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl transition-all duration-300"
+                    whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(147, 51, 234, 0.5)' }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-gradient-to-r from-purple-600/50 to-pink-600/50 hover:from-purple-500 hover:to-pink-500 border border-purple-500/50 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 mx-auto"
                   >
-                    ✨ Plan Another Adventure
-                  </button>
+                    <motion.span
+                      animate={{ rotate: [0, 20, -20, 0] }}
+                      transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
+                    >
+                      ✨
+                    </motion.span>
+                    Plan Another Adventure
+                  </motion.button>
                 </motion.div>
               </div>
             </motion.section>
