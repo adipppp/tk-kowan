@@ -1,6 +1,6 @@
 # 🌍 WanderLust AI
 
-An AI-powered travel itinerary generator that creates personalized trip plans with cost estimates.
+An AI-powered travel itinerary generator that creates personalized trip plans with cost estimates, country flags, and destination history.
 
 ![WanderLust AI](https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop)
 
@@ -8,8 +8,21 @@ An AI-powered travel itinerary generator that creates personalized trip plans wi
 
 - **AI-Powered Itineraries**: Leverages GPT-4o to generate detailed day-by-day travel plans
 - **Cost Estimates**: Get realistic budget breakdowns for flights, accommodation, food, and activities
-- **Beautiful UI**: Modern glassmorphism design with smooth animations
+- **🏳️ Country Flags**: Automatically displays the destination country's flag with smooth animations
+- **📜 City History**: Learn fascinating historical facts about your destination
+- **Beautiful UI**: Modern glassmorphism design with stunning animations
 - **Customizable**: Adjust destination, duration, budget level, and personal interests
+
+## 🎬 Animation Highlights
+
+| Element | Animation |
+|---------|-----------|
+| Country Flag | Floating effect + spring scale-in with rotation |
+| Cost Cards | Hover lift with scale, rotating icons |
+| Day Markers | Spring pop-in, subtle pulse effect |
+| Timeline Cards | Lift and glow on hover |
+| History Section | Gradient background with pulsing glow |
+| Buttons | Wiggling sparkle emoji, hover glow effects |
 
 ## 🛠️ Tech Stack
 
@@ -22,7 +35,7 @@ An AI-powered travel itinerary generator that creates personalized trip plans wi
 - Next.js 14 (App Router)
 - TypeScript
 - Tailwind CSS
-- Framer Motion
+- Framer Motion (animations)
 - Lucide React Icons
 - Axios
 
@@ -44,7 +57,7 @@ cd backend
 node server.js
 ```
 
-The backend will run on `http://localhost:5000`
+The backend will run on `http://localhost:5001`
 
 ### 2. Setup Frontend
 
@@ -62,14 +75,14 @@ The frontend will run on `http://localhost:3000`
 ```
 ai_travel_buddy/
 ├── backend/
-│   ├── server.js          # Express API server
+│   ├── server.js          # Express API server with GPT-4o integration
 │   ├── .env               # Environment variables (add your API key here)
 │   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   └── app/
-│   │       ├── page.tsx       # Main application page
-│   │       ├── globals.css    # Global styles
+│   │       ├── page.tsx       # Main application page with all UI components
+│   │       ├── globals.css    # Global styles + custom animations
 │   │       └── layout.tsx     # Root layout
 │   ├── package.json
 │   └── tailwind.config.ts
@@ -81,17 +94,18 @@ ai_travel_buddy/
 ### Backend (.env)
 ```
 OPENAI_API_KEY=your_openai_api_key_here
-PORT=5000
+PORT=5001
 ```
 
-## 🎨 UI Preview
+## 🎨 UI Features
 
-The application features:
-- Dark theme with a stunning Earth/map background
-- Glassmorphism input card with translucent styling
-- Animated cost breakdown cards
-- Alternating timeline layout for the itinerary
-- Smooth Framer Motion animations throughout
+- **Dark Theme**: Stunning Earth/map background with gradient overlay
+- **Glassmorphism**: Translucent input card with backdrop blur
+- **Country Flag Display**: Shows destination flag via flagcdn.com
+- **History Card**: Animated gradient card with destination history
+- **Cost Grid**: 5 animated cards showing budget breakdown
+- **Timeline**: Alternating day-by-day itinerary with vertical line
+- **Smooth Animations**: Powered by Framer Motion throughout
 
 ## 📝 API Endpoint
 
@@ -115,7 +129,10 @@ The application features:
   "days": 7,
   "budget": "Moderate",
   "itinerary": {
-    "summary": "...",
+    "summary": "An exciting week exploring Tokyo's blend of ancient traditions and cutting-edge technology!",
+    "countryCode": "JP",
+    "cityName": "Tokyo",
+    "history": "Tokyo, formerly known as Edo, became Japan's political center in 1603 when Tokugawa Ieyasu established his shogunate here. The city was renamed Tokyo ('Eastern Capital') in 1868 when it became the imperial capital.",
     "currency": "JPY",
     "costs": {
       "flights": "$800-$1200",
@@ -124,9 +141,32 @@ The application features:
       "activities": "$200-$350",
       "total": "$2000-$3000"
     },
-    "schedule": [...]
+    "schedule": [
+      {
+        "day": 1,
+        "title": "Arrival & Shibuya Exploration",
+        "activities": [
+          "Morning: Arrive at Narita/Haneda, transfer to hotel",
+          "Afternoon: Explore Shibuya Crossing and Hachiko Statue",
+          "Evening: Dinner in Shibuya, try authentic ramen"
+        ]
+      }
+    ]
   }
 }
+```
+
+## 🤝 Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## 📄 License
+
+MIT License - feel free to use this project for your own purposes.
+
+---
+
+Made with ❤️ by WanderLust AI
 ```
 
 ## 🤝 Contributing
