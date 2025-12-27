@@ -125,7 +125,11 @@ export default function Home() {
   const [showGlobe, setShowGlobe] = useState(false);
 
   // API endpoint with fallback
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://54.173.238.248:5001';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  if (API_URL === undefined) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+  }
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,11 +161,11 @@ export default function Home() {
       }, 2000);
     } catch (err: unknown) {
       // If remote fails, try localhost fallback
-      if (axios.isAxiosError(err) && API_URL !== 'http://localhost:5001') {
+      if (axios.isAxiosError(err) && API_URL !== 'http://localhost:8080') {
         try {
           console.log('Remote server unavailable, trying localhost...');
           const fallbackResponse = await axios.post<ApiResponse>(
-            'http://localhost:5001/api/itinerary',
+            `http://localhost:8080/api/itinerary`,
             requestData
           );
           setTimeout(() => {

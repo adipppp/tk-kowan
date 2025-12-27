@@ -63,7 +63,7 @@ cd backend
 node server.js
 ```
 
-The backend will run on `http://localhost:5001`
+The backend will run on `http://localhost:8080`
 
 ### 2. Setup Frontend
 
@@ -100,7 +100,7 @@ ai_travel_buddy/
 ### Backend (.env)
 ```
 OPENAI_API_KEY=your_openai_api_key_here
-PORT=5001
+PORT=8080
 ```
 
 ## 🎨 UI Features
